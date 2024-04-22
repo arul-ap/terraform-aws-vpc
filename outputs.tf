@@ -25,7 +25,7 @@ output "natgw_id" {
   value = {for k,v in var.natgw: k => aws_nat_gateway.natgw[k].id}
 }
 output "natgw_iep_id" {
-    description = "NAT Gateway Elastic IP"
+    description = "NAT Gateway Elastic IP Allocation ID"
   value = {for k,v in local.natgw_eip: k => aws_eip.natgw[k].id}
 }
 
@@ -57,10 +57,10 @@ output "rt_id" {
 
 output "tgw_subnet_id" {
   description = "Transit Gateway attachment ID"
-  value = {for k,v in var.var.tgw_attachments: k => module.tgw_subnets[k].tgw_subnet_id}
+  value = {for k,v in var.tgw_attachments: k => module.tgw_subnets[k].tgw_subnet_id}
 }
 
 output "tgw_attachment_id" {
   description = "Transit Gateway Attachment ID"
-  value = { for k,v in var.var.tgw_attachments: k => aws_ec2_transit_gateway_vpc_attachment.custom_vpc[k].id }
+  value = { for k,v in var.tgw_attachments: k => aws_ec2_transit_gateway_vpc_attachment.custom_vpc[k].id }
 }

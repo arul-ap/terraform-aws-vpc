@@ -20,7 +20,8 @@ module "vpc" {
   org = "abc"
   proj = "x"
   env = "dev"
-
+  
+  vpc_name = "vpc-01"
   vpc_cidr = "10.0.0.0/16"
   vpc_tags = {
     Description = "Test VPC 1"
