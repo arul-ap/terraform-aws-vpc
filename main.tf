@@ -221,5 +221,8 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "custom_vpc" {
   vpc_id = aws_vpc.custom_vpc.id
   transit_gateway_id = each.value.tgw_id
   subnet_ids = module.tgw_subnets[each.key].tgw_subnet_id
+  tags = {
+    Name = "${local.name-prefix}-${each.key}"
+  }
 }
 
