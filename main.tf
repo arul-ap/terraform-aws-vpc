@@ -49,7 +49,7 @@ resource "aws_subnet" "private_subnet" {
 }
 
 locals {
-  natgw_eip = {for key,value in var.natgw : key => value if value.type == "public"} // select eip for public nat gw
+  natgw_eip = {for k,v in var.natgw : k => v if v.type == "public"} // select eip for public nat gw
 }
 
 resource "aws_eip" "natgw" {
@@ -220,6 +220,6 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "custom_vpc" {
   for_each = var.tgw_attachments
   vpc_id = aws_vpc.custom_vpc.id
   transit_gateway_id = each.value.tgw_id
-  subnet_ids = module.tgw_subnets[each.key].tgw_subnet_ids
+  subnet_ids = module.tgw_subnets[each.key].tgw_subnet_id
 }
 

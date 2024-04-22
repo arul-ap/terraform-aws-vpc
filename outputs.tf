@@ -12,12 +12,12 @@ output "igw_id" {
 
 output "public_subnet_id" {
     description = "Public subnets ID"
-  value = { for key,value in var.public_subnets: key => aws_subnet.public_subnet[key].id}
+  value = { for k,v in var.public_subnets: k => aws_subnet.public_subnet[k].id}
 }
 
 output "private_subnet_id" {
     description = "Private Subnets ID"
-  value = {for key,value in var.private_subnets: key => aws_subnet.private_subnet[key].id}
+  value = {for k,v in var.private_subnets: k => aws_subnet.private_subnet[k].id}
 }
 
 output "natgw_id" {
