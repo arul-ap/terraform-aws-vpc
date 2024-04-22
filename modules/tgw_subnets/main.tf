@@ -1,6 +1,4 @@
 
-
-
 data "aws_region" "current" {}
 
 resource "aws_subnet" "tgw_subnets" {

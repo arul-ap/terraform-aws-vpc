@@ -70,7 +70,7 @@ resource "aws_nat_gateway" "natgw" {
 }
 
 
-resource "aws_default_network_acl" "vpc" {
+resource "aws_default_network_acl" "custom_vpc" {
   default_network_acl_id = aws_vpc.custom_vpc.default_network_acl_id
   dynamic "ingress" {
     for_each = var.default_nacl_ingress
@@ -104,7 +104,7 @@ resource "aws_default_network_acl" "vpc" {
 
 
 
-resource "aws_network_acl" "vpc" {
+resource "aws_network_acl" "custom_vpc" {
   for_each = var.nacl
   vpc_id = aws_vpc.custom_vpc.id
   subnet_ids = concat(length(each.value.private_subnets) == 0 ? [] : [ for i in each.value.private_subnets: aws_subnet.private_subnet[i].id ], 
@@ -178,13 +178,14 @@ module "sg" {
     sg = each.value
     name-prefix = local.name-prefix
 }
-
+/*
 resource "aws_default_route_table" "custom_vpc" {
   default_route_table_id = aws_vpc.custom_vpc.default_route_table_id
   tags = {
     Name = "${local.name-prefix}-${var.vpc_name}-default-rt"
   }
-}
+} */
+
 module "subnet_rt" {
   for_each = var.rt
   source = "./modules/subnet_rt"

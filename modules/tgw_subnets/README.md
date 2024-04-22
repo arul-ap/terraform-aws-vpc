@@ -1,0 +1,1 @@
+Sub module to create Transit gateway dedicated subnets in this VPC to attach to transit gateway.
