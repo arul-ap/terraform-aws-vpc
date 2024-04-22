@@ -37,7 +37,7 @@ output "default_nacl_id" {
 
 output "nacl_id" {
   description = "NACL ID"
-  value = {for k,v in var.nacl: k => aws_default_network_acl.custom_vpc[k].id}
+  value = {for k,v in var.nacl: k => aws_network_acl.custom_vpc[k].id}
   
 }
 output "default_sg_id" {
