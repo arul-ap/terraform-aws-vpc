@@ -17,7 +17,7 @@ output "private_subnet_id" {
   value = module.vpc.private_subnet_id
 }
 
-output "netgw_id" {
+output "natgw_id" {
   description = "NAT gateway ID"
   value = module.vpc.natgw_id
 }
