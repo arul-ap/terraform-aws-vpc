@@ -1,6 +1,6 @@
 
-resource "aws_route" "natgw" {
+resource "aws_route" "tgw" {
   route_table_id         = var.route.rt_id
   destination_cidr_block = var.route.cidr
-  nat_gateway_id         = var.route.natgw
+  transit_gateway_id     = var.route.tgw
 }
