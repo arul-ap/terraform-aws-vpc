@@ -9,3 +9,7 @@ variable "tgw_subnets" {
 variable "vpc_id" {
   type = string
 }
+
+variable "name-prefix" {
+  type = string
+}

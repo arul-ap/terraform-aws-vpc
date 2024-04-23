@@ -7,6 +7,6 @@ resource "aws_subnet" "tgw_subnets" {
   cidr_block        = each.value.subnet_cidr
   availability_zone = "${data.aws_region.current.name}${each.value.az}"
   tags = merge(each.value.tags, {
-    Name = "${local.name-prefix}-${each.key}"
+    Name = "${var.name-prefix}-${each.key}"
   })
 }
