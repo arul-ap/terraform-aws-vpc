@@ -196,6 +196,7 @@ variable "tgw_attachments" {
     tgw_subnets = map(object({
       subnet_cidr = string
       az          = string
+      tags        = map(string)
     }))
   }))
   default = {}
