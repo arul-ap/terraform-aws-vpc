@@ -214,12 +214,12 @@ module "tgw_subnets" {
   source      = "./modules/tgw_subnets"
   tgw_subnets = each.value.tgw_subnets
   vpc_id      = aws_vpc.custom_vpc.id
+  name-prefix        = local.name-prefix
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "custom_vpc" {
   for_each           = var.tgw_attachments
   vpc_id             = aws_vpc.custom_vpc.id
-  name-prefix        = local.name-prefix
   transit_gateway_id = each.value.tgw_id
   subnet_ids         = module.tgw_subnets[each.key].tgw_subnet_id
   tags = {
