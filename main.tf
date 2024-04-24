@@ -207,7 +207,19 @@ module "subnet_rt" {
         cidr    = v.destination_cidr
         pl      = v.prefix_list_id
         gw_type = v.gw_type
-  gw_id = aws_nat_gateway.natgw[v.gw].id } if v.gw_type == "natgw" })
+  gw_id = aws_nat_gateway.natgw[v.gw].id } if v.gw_type == "natgw" },
+  {for k, v in each.value.routes :
+      k => {
+        cidr    = v.destination_cidr
+        pl      = v.prefix_list_id
+        gw_type = v.gw_type
+        gw_id = v.gw } if v.gw_type == "tgw" },
+  {for k, v in each.value.routes :
+      k => {
+        cidr    = v.destination_cidr
+        pl      = v.prefix_list_id
+        gw_type = v.gw_type
+        gw_id = v.gw } if v.gw_type == "pcx" })
 
 }
 
