@@ -1,6 +1,7 @@
 variable "routes" {
   type = map(object({
     cidr    = string
+    pl      = string
     gw_type = string
     gw_id   = string
   }))

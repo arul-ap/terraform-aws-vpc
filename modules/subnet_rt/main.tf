@@ -11,7 +11,7 @@ resource "aws_route_table_association" "subnet_rt" {
 }
 
 locals {
-  igw_routes = { for k, v in var.routes : k => v if v.gw_type == "igw" }
+  igw_routes = { for k, v in var.routes : k => v if(v.gw_type == "igw" && v.cidr != null) }
 }
 module "igw_routes" {
   for_each = local.igw_routes
@@ -24,7 +24,20 @@ module "igw_routes" {
 }
 
 locals {
-  natgw_routes = { for k, v in var.routes : k => v if v.gw_type == "natgw" }
+  igw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "igw" && v.pl != null) }
+}
+module "igw_routes_pl" {
+  for_each = local.igw_routes_pl
+  source   = "./modules/igw_routes_pl"
+  route = {
+    rt_id = aws_route_table.subnet_rt.id
+    pl    = each.value.pl
+    igw   = each.value.gw_id
+  }
+}
+
+locals {
+  natgw_routes = { for k, v in var.routes : k => v if(v.gw_type == "natgw" && v.cidr != null) }
 }
 module "natgw_routes" {
   for_each = local.natgw_routes
@@ -37,7 +50,20 @@ module "natgw_routes" {
 }
 
 locals {
-  tgw_routes = { for k, v in var.routes : k => v if v.gw_type == "tgw" }
+  natgw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "natgw" && v.pl != null) }
+}
+module "natgw_routes_pl" {
+  for_each = local.natgw_routes_pl
+  source   = "./modules/natgw_routes_pl"
+  route = {
+    rt_id = aws_route_table.subnet_rt.id
+    pl    = each.value.pl
+    natgw = each.value.gw_id
+  }
+}
+
+locals {
+  tgw_routes = { for k, v in var.routes : k => v if(v.gw_type == "tgw" && v.cidr != null) }
 }
 module "tgw_routes" {
   for_each = local.tgw_routes
@@ -49,9 +75,22 @@ module "tgw_routes" {
   }
 }
 
+locals {
+  tgw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "tgw" && v.pl != null) }
+}
+module "tgw_routes_pl" {
+  for_each = local.tgw_routes_pl
+  source   = "./modules/tgw_routes_pl"
+  route = {
+    rt_id = aws_route_table.subnet_rt.id
+    pl    = each.value.pl
+    tgw   = each.value.gw_id
+  }
+}
+
 
 locals {
-  pcx_routes = { for k, v in var.routes : k => v if v.gw_type == "pcx" }
+  pcx_routes = { for k, v in var.routes : k => v if(v.gw_type == "pcx" && v.cidr != null) }
 }
 module "pcx_routes" {
   for_each = local.pcx_routes
@@ -59,6 +98,19 @@ module "pcx_routes" {
   route = {
     rt_id = aws_route_table.subnet_rt.id
     cidr  = each.value.cidr
+    pcx   = each.value.gw_id
+  }
+}
+
+locals {
+  pcx_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "pcx" && v.pl != null) }
+}
+module "pcx_routes_pl" {
+  for_each = local.pcx_routes_pl
+  source   = "./modules/pcx_routes_pl"
+  route = {
+    rt_id = aws_route_table.subnet_rt.id
+    pl    = each.value.pl
     pcx   = each.value.gw_id
   }
 }

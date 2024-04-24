@@ -179,7 +179,8 @@ variable "rt" {
     public_subnets  = optional(list(string), [])
     private_subnets = optional(list(string), [])
     routes = map(object({
-      destination_cidr = string
+      destination_cidr = optional(string)
+      prefix_list_id   = optional(string)
       gw_type          = string
       gw               = string
     }))

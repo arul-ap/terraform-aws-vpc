@@ -178,13 +178,13 @@ module "sg" {
   sg          = each.value
   name-prefix = local.name-prefix
 }
-/*
+
 resource "aws_default_route_table" "custom_vpc" {
   default_route_table_id = aws_vpc.custom_vpc.default_route_table_id
   tags = {
     Name = "${local.name-prefix}-${var.vpc_name}-default-rt"
   }
-} */
+}
 
 module "subnet_rt" {
   for_each = var.rt
@@ -199,11 +199,13 @@ module "subnet_rt" {
   routes = merge({ for k, v in each.value.routes :
     k => {
       cidr    = v.destination_cidr
+      pl      = v.prefix_list_id
       gw_type = v.gw_type
     gw_id = aws_internet_gateway.igw["igw"].id } if v.gw_type == "igw" },
     { for k, v in each.value.routes :
       k => {
         cidr    = v.destination_cidr
+        pl      = v.prefix_list_id
         gw_type = v.gw_type
   gw_id = aws_nat_gateway.natgw[v.gw].id } if v.gw_type == "natgw" })
 
@@ -214,7 +216,7 @@ module "tgw_subnets" {
   source      = "./modules/tgw_subnets"
   tgw_subnets = each.value.tgw_subnets
   vpc_id      = aws_vpc.custom_vpc.id
-  name-prefix        = local.name-prefix
+  name-prefix = local.name-prefix
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "custom_vpc" {
