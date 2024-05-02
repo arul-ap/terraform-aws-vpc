@@ -8,6 +8,7 @@ data "aws_region" "current" {}
 
 resource "aws_vpc" "custom_vpc" {
   cidr_block = var.vpc_cidr
+  enable_dns_hostnames = true
   tags = merge(var.vpc_tags, {
     Name = "${local.name-prefix}-${var.vpc_name}"
   })
@@ -220,6 +221,7 @@ module "subnet_rt" {
         pl      = v.prefix_list_id
         gw_type = v.gw_type
         gw_id = v.gw } if v.gw_type == "pcx" })
+  depends_on = [ aws_ec2_transit_gateway_vpc_attachment.custom_vpc ]
 
 }
 
