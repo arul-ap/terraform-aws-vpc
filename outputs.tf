@@ -47,7 +47,7 @@ output "default_sg_id" {
 
 output "sg_id" {
   description = "Security Group ID"
-  value       = { for k, v in var.sg : k => module.sg[k].sg_id }
+  value       = { for k, v in var.sg : k => aws_security_group.custom_sg[k].id }
 }
 
 output "rt_id" {

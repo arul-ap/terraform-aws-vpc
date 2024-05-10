@@ -7,7 +7,7 @@ data "aws_region" "current" {}
 
 
 resource "aws_vpc" "custom_vpc" {
-  cidr_block = var.vpc_cidr
+  cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   tags = merge(var.vpc_tags, {
     Name = "${local.name-prefix}-${var.vpc_name}"
@@ -171,13 +171,45 @@ resource "aws_vpc_security_group_egress_rule" "default_sg" {
   }
 }
 
-module "sg" {
+resource "aws_security_group" "custom_sg" {
   for_each    = var.sg
-  source      = "./modules/sg"
   vpc_id      = aws_vpc.custom_vpc.id
-  sg_name     = each.key
-  sg          = each.value
+  name        = "${local.name-prefix}-${each.key}"
+  description = each.value.description
+  tags = {
+    Name = "${local.name-prefix}-${each.key}"
+  }
+}
+
+module "sg_ingress" {
+  for_each    = var.sg
+  source      = "./modules/sg_ingress"
+  sg_id       = aws_security_group.custom_sg[each.key].id
   name-prefix = local.name-prefix
+  ingress_rules = { for k, v in each.value.ingress_rules : k => {
+    protocol         = v.protocol
+    source_cidr      = v.source_cidr
+    sg_id            = v.sg == null ? null : aws_security_group.custom_sg[v.sg].id
+    pf_list_id       = v.pf_list
+    port_range_start = v.port_range_start
+    port_range_end   = v.port_range_end
+  } }
+}
+
+
+module "sg_egress" {
+  for_each    = var.sg
+  source      = "./modules/sg_egress"
+  sg_id       = aws_security_group.custom_sg[each.key].id
+  name-prefix = local.name-prefix
+  egress_rules = { for k, v in each.value.egress_rules : k => {
+    protocol         = v.protocol
+    target_cidr      = v.target_cidr
+    sg_id            = v.sg == null ? null : aws_security_group.custom_sg[v.sg].id
+    pf_list_id       = v.pf_list
+    port_range_start = v.port_range_start
+    port_range_end   = v.port_range_end
+  } }
 }
 
 resource "aws_default_route_table" "custom_vpc" {
@@ -200,28 +232,31 @@ module "subnet_rt" {
   routes = merge({ for k, v in each.value.routes :
     k => {
       cidr    = v.destination_cidr
+      is_pl   = v.is_prefix_list
       pl      = v.prefix_list_id
       gw_type = v.gw_type
     gw_id = aws_internet_gateway.igw["igw"].id } if v.gw_type == "igw" },
     { for k, v in each.value.routes :
       k => {
         cidr    = v.destination_cidr
+        is_pl   = v.is_prefix_list
         pl      = v.prefix_list_id
         gw_type = v.gw_type
-  gw_id = aws_nat_gateway.natgw[v.gw].id } if v.gw_type == "natgw" },
-  {for k, v in each.value.routes :
+    gw_id = aws_nat_gateway.natgw[v.gw].id } if v.gw_type == "natgw" },
+    { for k, v in each.value.routes :
       k => {
         cidr    = v.destination_cidr
+        is_pl   = v.is_prefix_list
         pl      = v.prefix_list_id
         gw_type = v.gw_type
-        gw_id = v.gw } if v.gw_type == "tgw" },
-  {for k, v in each.value.routes :
+    gw_id = aws_ec2_transit_gateway_vpc_attachment.custom_vpc[v.gw].transit_gateway_id } if v.gw_type == "tgw" },
+    { for k, v in each.value.routes :
       k => {
         cidr    = v.destination_cidr
+        is_pl   = v.is_prefix_list
         pl      = v.prefix_list_id
         gw_type = v.gw_type
-        gw_id = v.gw } if v.gw_type == "pcx" })
-  depends_on = [ aws_ec2_transit_gateway_vpc_attachment.custom_vpc ]
+  gw_id = v.gw } if v.gw_type == "pcx" })
 
 }
 

@@ -11,7 +11,7 @@ resource "aws_route_table_association" "subnet_rt" {
 }
 
 locals {
-  igw_routes = { for k, v in var.routes : k => v if(v.gw_type == "igw" && v.cidr != null) }
+  igw_routes = { for k, v in var.routes : k => v if(v.gw_type == "igw" && !v.is_pl) }
 }
 module "igw_routes" {
   for_each = local.igw_routes
@@ -24,7 +24,7 @@ module "igw_routes" {
 }
 
 locals {
-  igw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "igw" && v.pl != null) }
+  igw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "igw" && v.is_pl) }
 }
 module "igw_routes_pl" {
   for_each = local.igw_routes_pl
@@ -37,7 +37,7 @@ module "igw_routes_pl" {
 }
 
 locals {
-  natgw_routes = { for k, v in var.routes : k => v if(v.gw_type == "natgw" && v.cidr != null) }
+  natgw_routes = { for k, v in var.routes : k => v if(v.gw_type == "natgw" && !v.is_pl) }
 }
 module "natgw_routes" {
   for_each = local.natgw_routes
@@ -50,7 +50,7 @@ module "natgw_routes" {
 }
 
 locals {
-  natgw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "natgw" && v.pl != null) }
+  natgw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "natgw" && v.is_pl) }
 }
 module "natgw_routes_pl" {
   for_each = local.natgw_routes_pl
@@ -63,7 +63,7 @@ module "natgw_routes_pl" {
 }
 
 locals {
-  tgw_routes = { for k, v in var.routes : k => v if(v.gw_type == "tgw" && v.cidr != null) }
+  tgw_routes = { for k, v in var.routes : k => v if(v.gw_type == "tgw" && !v.is_pl) }
 }
 module "tgw_routes" {
   for_each = local.tgw_routes
@@ -76,7 +76,7 @@ module "tgw_routes" {
 }
 
 locals {
-  tgw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "tgw" && v.pl != null) }
+  tgw_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "tgw" && v.is_pl) }
 }
 module "tgw_routes_pl" {
   for_each = local.tgw_routes_pl
@@ -90,7 +90,7 @@ module "tgw_routes_pl" {
 
 
 locals {
-  pcx_routes = { for k, v in var.routes : k => v if(v.gw_type == "pcx" && v.cidr != null) }
+  pcx_routes = { for k, v in var.routes : k => v if(v.gw_type == "pcx" && !v.is_pl) }
 }
 module "pcx_routes" {
   for_each = local.pcx_routes
@@ -103,7 +103,7 @@ module "pcx_routes" {
 }
 
 locals {
-  pcx_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "pcx" && v.pl != null) }
+  pcx_routes_pl = { for k, v in var.routes : k => v if(v.gw_type == "pcx" && v.is_pl) }
 }
 module "pcx_routes_pl" {
   for_each = local.pcx_routes_pl

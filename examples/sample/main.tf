@@ -201,7 +201,7 @@ module "vpc" {
       }
     }
   } //end rt
- /*
+  /*
   // Attched this VPC to Transit gateway. Provision Transit gateway first. Specify tgw_id (Transit gateway ID) here and use this block of code for VPC attachment.
   tgw_attachments = {
     tgw-attach-test = {
